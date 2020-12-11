@@ -29,6 +29,6 @@ Sub beam
     TEMPx = TEMPx - 1       'move down by 1 for accurate position of the black wall
   EndWhile
   If GraphicsWindow.GetPixel(x,y) = "#FFFFFF" Then
-    LDShapes.MoveLine(RAY,Px+10,Py+10,TEMPx,Py+10)        'move the ray
+    LDShapes.MoveLine(RAY,Px+10,Py+10,TEMPx,Py+10)        'move the ray 
   EndIf
 EndSub
