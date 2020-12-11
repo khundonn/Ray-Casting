@@ -43,3 +43,29 @@ Sub beam
     LDShapes.MoveLine(RAY[m],Px,Py,TEMPx,TEMPy)       'move the ray
   EndFor
 EndSub
+
+'>>==========move using keyboard
+Sub down
+  LASTKEY = GraphicsWindow.LastKey
+  '>>for moving up,down,left,right
+  k = 0
+  If LASTKEY = "w" or LASTKEY = "W" and GraphicsWindow.GetPixel(Px,Py-10) <> "#000000" Then
+    Py = Py - 4
+    Shapes.Move(PLAYER,Px-10,Py-10)
+  ElseIf LASTKEY = "s" or LASTKEY = "S" and GraphicsWindow.GetPixel(Px,Py+10) <> "#000000" Then
+    Py = Py + 4
+    Shapes.Move(PLAYER,Px-10,Py-10)
+  ElseIf LASTKEY = "a" or LASTKEY = "A" and GraphicsWindow.GetPixel(Px-10,Py) <> "#000000" Then
+    Px = Px - 4
+    Shapes.Move(PLAYER,Px-10,Py-10)
+  ElseIf LASTKEY = "d" or LASTKEY = "D" and GraphicsWindow.GetPixel(Px+10,Py) <> "#000000" Then
+    Px = Px + 4
+    Shapes.Move(PLAYER,Px-10,Py-10)
+  EndIf
+  '>>for turning the player
+  If LASTKEY = "Left" Then
+    Pa = Pa + 4
+  ElseIf LASTKEY = "Right" Then
+    Pa = Pa - 4
+  EndIf
+EndSub
