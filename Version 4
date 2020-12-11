@@ -1,0 +1,114 @@
+window1 = LDWindows.Create()
+GraphicsWindow.Height = 450       'set screen height
+GraphicsWindow.Width = 700        'set screen width
+window2 = LDWindows.Create()
+GraphicsWindow.Height = 700       'set screen height
+GraphicsWindow.Width = 950        'set screen width
+LDWindows.CurrentID = window1
+
+'>>==========Load image as the map
+GraphicsWindow.DrawImage(Program.Directory + "\map.jpg",0,0)
+
+'>>==========move player with mouse location
+PLAYER = Shapes.AddEllipse(20,20)   	'draw player
+For n=0 To 20
+  RAY[n] = Shapes.AddLine(0,0,0,0)   	'draw multiple lines
+EndFor
+GraphicsWindow.KeyDown = down    	'when keyboard key is pressed, goto sub down
+Shapes.Move(PLAYER,20,20)   	'starting position
+Px = 30   	'player position
+Py = 30
+Pa = 0    	'player angle
+While 1=1
+  beam()
+EndWhile
+
+Sub move
+  While 1=1
+	x = GraphicsWindow.MouseX   	'mouse position
+	y = GraphicsWindow.MouseY
+	If GraphicsWindow.GetPixel(x,y) = "#FFFFFF" and GraphicsWindow.GetPixel(x+20,y+20) = "#FFFFFF" Then   	'when mouse coordinate pixel = white move the player according to the mouse's coordinate
+  	Shapes.Move(PLAYER,x,y)   	'move the player
+  	Px = x+10
+  	Py = y+10
+	EndIf
+	beam()
+  EndWhile
+EndSub
+
+'>>===========cast ray
+Sub beam
+  k = 0    	'set variable for ray array no
+  If Pa > 360 Then
+	  Pa = Math.Remainder(Pa,360)   	'if player angle is above 360, go back to 0
+  ElseIf Pa < 0 Then
+	  Pa = 360 + Pa   	'if player angle is negative, 360 +(-player angle)
+  EndIf
+  For i= Pa-20 To Pa+20 Step 2    	'set angle to be +-20 from character angle
+	  j = i   	'to prevent variable over write
+	  If i < 0 Then
+  	  j = 360 + j   	'when angle<0, angle = 360 +(-angle)
+	  EndIf
+	  If k = 20 Then    	'restrict the no of ray for 20: 0 < k < 20
+  	  k = 0
+	  Else
+  	  k = k + 1
+	  EndIf
+	  SIN = Math.Sin(Math.GetRadians(j))
+	  COS = Math.Cos(Math.GetRadians(j))
+	  TEMPx[k] = Px    	'let new variable = player position so the ray can move with the player not the mouse
+	  TEMPy[k] = Py
+	  While GraphicsWindow.GetPixel(TEMPx[k],TEMPy[k]) = "#FFFFFF"    	'when pixel = white, keep on looping
+  	  TEMPx[k] = TEMPx[k] + SIN
+  	  TEMPy[k] = TEMPy[k] + COS
+	  EndWhile
+	  LDShapes.MoveLine(RAY[k],Px,Py,TEMPx[k],TEMPy[k])   	'move ray
+  EndFor
+  LDWindows.CurrentID = window2
+  ThreeD()
+  LDWindows.CurrentID = window1
+EndSub
+
+'>>==========move using keyboard
+Sub down
+  LASTKEY = GraphicsWindow.LastKey
+  '>>for moving up,down,left,right
+  k = 0
+  If LASTKEY = "w" or LASTKEY = "W" and GraphicsWindow.GetPixel(Px,Py-10) <> "#000000" Then
+	  Py = Py - 4
+	  Shapes.Move(PLAYER,Px-10,Py-10)
+  ElseIf LASTKEY = "s" or LASTKEY = "S" and GraphicsWindow.GetPixel(Px,Py+10) <> "#000000" Then
+	  Py = Py + 4
+	  Shapes.Move(PLAYER,Px-10,Py-10)
+  ElseIf LASTKEY = "a" or LASTKEY = "A" and GraphicsWindow.GetPixel(Px-10,Py) <> "#000000" Then
+	  Px = Px - 4
+	  Shapes.Move(PLAYER,Px-10,Py-10)
+  ElseIf LASTKEY = "d" or LASTKEY = "D" and GraphicsWindow.GetPixel(Px+10,Py) <> "#000000" Then
+	  Px = Px + 4
+	  Shapes.Move(PLAYER,Px-10,Py-10)
+  EndIf
+  '>>for turning the player
+  If LASTKEY = "Left" Then
+	  Pa = Pa + 4
+  ElseIf LASTKEY = "Right" Then
+	  Pa = Pa - 4
+  EndIf
+EndSub
+
+'>>==========New GraphicsWindow for 3D view
+Sub ThreeD
+  '>>set background
+  GraphicsWindow.PenWidth = 0
+  GraphicsWindow.BrushColor = "#FFB0ECFF"
+  top = Shapes.AddRectangle(950,350)
+  GraphicsWindow.BrushColor = "Gray"
+  bottom = Shapes.AddRectangle(950,350)
+  Shapes.Move(bottom,0,350)
+  '>>add wall
+  GraphicsWindow.BrushColor = "green"
+  For c=0 To 20
+	  len[c] = 700-LDMath.FixSigFig(Math.SquareRoot(Math.Power(Px-TEMPx[c],2)+Math.Power(Py-TEMPy[c],2)),2)
+	  rec[c] = Shapes.AddRectangle(950/21,len[c])
+	  Shapes.Move(rec[c],(950/21)*c,(700-len[c])/2)
+  EndFor
+EndSub
