@@ -1,0 +1,32 @@
+'>>==========move player with mouse location
+PLAYER = Shapes.AddEllipse(20,20)       'draw player
+For n=0 To 360 Step 5
+  RAY[n] = Shapes.AddLine(0,0,0,0)        'draw multiple lines
+EndFor
+Shapes.Move(PLAYER,20,20)       'starting position
+
+While 1=1
+  x = GraphicsWindow.MouseX       'mouse position
+  y = GraphicsWindow.MouseY
+  If GraphicsWindow.GetPixel(x,y) = "#FFFFFF" and GraphicsWindow.GetPixel(x+20,y+20) = "#FFFFFF" Then
+    Shapes.Move(PLAYER,x,y)       'move the player
+    Px = x+10
+    Py = y+10
+  EndIf
+  beam()
+EndWhile
+
+'>>==========cast ray
+Sub beam
+  For m=0 To 360 Step 5
+    SIN = Math.Sin(Math.GetRadians(m))
+    COS = Math.Cos(Math.GetRadians(m))
+    TEMPx = Px        'let new variable = player position so the ray can move with the player not the mouse
+    TEMPy = Py
+    While GraphicsWindow.GetPixel(TEMPx,TEMPy) = "#FFFFFF"
+      TEMPx = TEMPx + SIN       'move up by 1 untill pixel color = black
+      TEMPy = TEMPy + COS
+    EndWhile
+    LDShapes.MoveLine(RAY[m],Px,Py,TEMPx,TEMPy)       'move the ray
+  EndFor
+EndSub
