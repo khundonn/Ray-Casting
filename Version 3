@@ -1,0 +1,45 @@
+For n=0 To 20
+  RAY[n] = Shapes.AddLine(0,0,0,0)        'draw multiple lines
+EndFor
+GraphicsWindow.KeyDown = down()       'when keyboard key is pressed, go to sub down
+Shapes.Move(PLAYER,20,20)       'starting position
+
+Px = 30       'player position
+Py = 30
+Pa = 0        'player angle
+
+'Disable mouse
+While 1=1
+  beam()
+EndWhile
+
+'>>==========cast ray
+Sub beam
+  k = 0       'set variable for ray array no
+  If Pa > 360 Then
+    Pa = Math.Remainder(Pa,360)       'if player angle is above 360, go back to 0
+  ElseIf Pa < 0 Then
+    Pa = 360 + Pa       'if player angle is negative +(-player angle)
+  EndIf
+  
+  For i = Pa-20 To Pa+20 Step 2       'set angle to be +-20 from charavter angle
+    j = i       'to prevent variable over write
+    If i < 0 Then
+      j = 360 + j       'when angle < 0, angle = 360 +(-angle)
+    EndIf
+    If k = 20 Then        'restrict the no of ray for 20: 0 < k < 20
+      k = 0
+    Else
+      k = k + 1
+    EndIf
+    SIN = Math.Sin(Math.GetRadians(j))
+    COS = Math.Cos(Math.GetRadians(j))
+    TEMPx = Px        'let new variable = player position so the ray can move with the player not the mouse
+    TEMPy = Py
+    While GraphicsWindow.GetPixel(TEMPx,TEMPy) = "#FFFFFF"        'while pixel = white, keep on looping
+      TEMPx = TEMPx + SIN
+      TEMPy = TEMPy + COS
+    EndWhile
+    LDShapes.MoveLine(RAY[m],Px,Py,TEMPx,TEMPy)       'move the ray
+  EndFor
+EndSub
